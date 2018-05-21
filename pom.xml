@@ -7,8 +7,204 @@
     <groupId>com.test</groupId>
     <artifactId>learn_ML</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>Learn SPARK ML</name>
+    <description>学习spark机器学习库</description>
 
+    <developers>
+        <developer>
+            <id>lvxw</id>
+            <name>吕学文</name>
+            <email>lvxw@fun.tv</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <sonar.language>java</sonar.language>
+        <java-version>1.8</java-version>
+        <scala-version>2.11.12</scala-version>
+        <src.dir>src/main/scala</src.dir>
+        <src.dir>src/main/java</src.dir>
+        <src.res.dir>src/main/resource</src.res.dir>
+        <test.src.dir>src/test/scala</test.src.dir>
+        <test.src.dir>src/test/java</test.src.dir>
+        <test.res.dir>src/test/resource</test.res.dir>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jarfile.name>ML</jarfile.name>
+        <jar.out.dir>jar</jar.out.dir>
+        <hadoop.core.version>2.9.0</hadoop.core.version>
+        <spark.core.version>2.3.0</spark.core.version>
+        <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>jdk.tools</groupId>
+            <artifactId>jdk.tools</artifactId>
+            <version>${java-version}</version>
+            <scope>system</scope>
+            <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>${hadoop.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-mapreduce-client-core</artifactId>
+            <version>${hadoop.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>hadoop-lzo</groupId>
+            <artifactId>hadoop-lzo</artifactId>
+            <version>0.4.15</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>${spark.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>${spark.core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-mllib_2.11</artifactId>
+            <version>${spark.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${scala-version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>${src.dir}</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${src.dir}</directory>
+            </resource>
+            <resource>
+                <directory>${src.res.dir}</directory>
+                <includes>
+                    <include>**/*</include>
+                    <include>*</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <testSourceDirectory>${test.src.dir}</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>${test.src.dir}</directory>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <finalName>${jarfile.name}</finalName>
+                    <outputDirectory>${jar.out.dir}</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>Build deploy package</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <finalName>${project.artifactId}-${project.version}-${project.activeProfiles[0].id}-${maven.build.timestamp}</finalName>
+                            <descriptors>
+                                <descriptor>assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>scala-compile-first</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <profiles>
+        <profile>
+            <id>product</id>
+            <properties>
+                <env_name>product</env_name>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <env_name>test</env_name>
+            </properties>
+        </profile>
         <profile>
             <id>dev</id>
             <activation>
@@ -29,23 +225,4 @@
             </pluginRepositories>
         </profile>
     </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.11</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_2.11</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-mllib_2.11</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-    </dependencies>
 </project>
